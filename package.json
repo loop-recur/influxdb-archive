@@ -1,0 +1,30 @@
+{
+  "name": "influx-collectd-archive",
+  "version": "0.0.1",
+  "description": "Archive collectd data to Amazon Glacier using influx",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ryancharette/influx-collectd-archive.git"
+  },
+  "keywords": [
+    "archive",
+    "glacier",
+    "collect",
+    "influxdb",
+    "amazon"
+  ],
+  "author": "Ryan Charette",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryancharette/influx-collectd-archive/issues"
+  },
+  "homepage": "https://github.com/ryancharette/influx-collectd-archive",
+  "dependencies": {
+    "aws-sdk": "^2.1.13",
+    "influx": "^3.3.0"
+  }
+}
