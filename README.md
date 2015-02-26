@@ -1,3 +1,3 @@
-# influx-collectd-archive
+# influxdb-archive
 
-A way to archive all collectd data from influx to Amazon Glacier.
+Archive data from InfluxDB.
