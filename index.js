@@ -17,17 +17,17 @@ var influx_opts = {
 
 var influx_client = influx(influx_opts);
 
-function archive(vault_name) {
-  var last_time;
-  var archive_query = 'select * from /collectd.*/ limit 100;';
+function archive(vault_name, last_time) {
+  var archive_query = 'select * from /collectd.*/' + (last_time ? ' where time > ' + last_time + ' limit 100;' : ' limit 100');
   var delete_query = 'delete from /collectd.*/ where time < ' + last_time + ';';
+
   influx_client.query(archive_query, function(err, rows) {
     if(err) { throw err; }
 
     if(rows && rows[0] && rows[0].points && rows[0].points[0] && rows[0].points[0][0]) {
       glacier_client.uploadArchive({vaultName: vault_name, body: JSON.stringify(rows)}, function(err, data) {
         if(err) { throw err; }
-        last_time = rows[0].points[0][0] + 1;
+        archive(value_name, rows[0].points[0][0] + 1);
       });
     } else {
       influx_client.query(delete_query, function(err, data) {
