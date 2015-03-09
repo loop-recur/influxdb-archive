@@ -18,24 +18,33 @@ var influx_opts = {
 var influx_client = influx(influx_opts);
 
 function archive(vault_name) {
-  influx_client.query('select * from /collectd.*/;', function(err, rows) {
+  var last_time;
+  var archive_query = 'select * from /collectd.*/ limit 100;';
+  var delete_query = 'delete from /collectd.*/ where time < ' + last_time + ';';
+  influx_client.query(archive_query, function(err, rows) {
     if(err) { throw err; }
 
     if(rows && rows[0] && rows[0].points && rows[0].points[0] && rows[0].points[0][0]) {
       glacier_client.uploadArchive({vaultName: vault_name, body: JSON.stringify(rows)}, function(err, data) {
         if(err) { throw err; }
-        var last_time = rows[0].points[0][0] + 1;
-        var q = 'delete from /collectd.*/ where time < ' + last_time + ';';
-
-        influx_client.query(q, function(err, data) {
-          if(err) { throw err; }
-        });
+        last_time = rows[0].points[0][0] + 1;
+      });
+    } else {
+      influx_client.query(delete_query, function(err, data) {
+        if(err) { throw err; }
       });
     }
   });
 }
 
-glacier_client.listVaults({}, function(err, data)  {
+var vault_name = (new Date()).getTime().toString(36);
+
+glacier_client.createVault({vaultName: vault_name}, function(err) {
+  if(err) { throw err; }
+  archive(vault_name);
+});
+
+/*glacier_client.listVaults({}, function(err, data)  {
   var vault_name = (new Date()).getTime().toString(36);
   if(err) { throw err; }
   if(!data.VaultList.length) {
@@ -48,4 +57,4 @@ glacier_client.listVaults({}, function(err, data)  {
     archive(vault_name);
   }
 });
-
+*/
