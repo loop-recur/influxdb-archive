@@ -37,7 +37,7 @@ function getRows() {
 }
 
 function archive(rows) {
-  if(!rows && !rows.length) { return; }
+  if(!rows || !rows.length) { return; }
   var furthest_batch_past = rows[0].points[rows[0].points.length-1][0];
 
   glacier_client.uploadArchive({vaultName: VAULT_NAME, body: JSON.stringify(rows)}, function(err) {
